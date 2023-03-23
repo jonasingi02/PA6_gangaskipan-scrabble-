@@ -2,10 +2,30 @@
 # svo væri hægt að hafa bara if slikirði í innstu for lykkjunni til þess að um það hvort einhver bókstafur ætti að koma þar.git
 class Board:
     def __init__(self) -> None:
-        self.tile_empty = True
+        self.grid = self.initialize_grid()
+        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
+
+    def initialize_grid(self):
+        ''' Returns an initialized grid for the given dimension '''
+        DIM = 15
+        EMPTY = '|_'
+        grid = []
+
+        for _ in range(DIM):
+            sublist = []
+            for _ in range(DIM):
+                sublist.append(EMPTY)
+            grid.append(sublist)
+
+        return grid
+
+    def update_grid(self, placement:tuple, letter:str):
+        y_pos = self.alphabet.index(placement[0].upper())
+        x_pos = self.alphabet.index(placement[1].upper())
+
+        self.grid[y_pos][x_pos] = f'|{letter}'
 
     def __str__(self) -> None:
-        alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
         ret_str= "   A B C D E F G H I J K L M N O\n  "
 
         # ret_str = ""
@@ -15,10 +35,10 @@ class Board:
         ret_str = ret_str + "\n"
         for i in range(15):
 
-            ret_str += alphabet[i] + ' '
+            ret_str += self.alphabet[i] + ' '
 
             for j in range(15):
-                ret_str = ret_str + "|_"
+                ret_str = ret_str + self.grid[i][j]
             ret_str = ret_str + "|\n"
         return ret_str
 
@@ -29,9 +49,21 @@ class Board:
 a = Board()
 print(a)
 
+a.update_grid(('d','d'), 'A')
+a.update_grid(('d','e'), 'T')
+a.update_grid(('d','f'), 'L')
+a.update_grid(('d','g'), 'I')
 
+a.update_grid(('g','f'), 'O')
+a.update_grid(('g','g'), 'G')
 
+a.update_grid(('l','c'), 'J')
+a.update_grid(('l','d'), 'Ó')
+a.update_grid(('l','e'), 'N')
+a.update_grid(('l','f'), 'A')
+a.update_grid(('l','g'), 'S')
 
+print(a)
 
 
 
