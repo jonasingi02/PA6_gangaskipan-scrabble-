@@ -1,6 +1,9 @@
+import random as rd
+
 def main():
-    # test_game_start()
-    test_board()
+    test_game()
+    # test_board()
+    # test_bag()
 
 
 # veit ekki alveg hvar ég á að byrja í þessu verkefni enn þetta gæti alveg verið ágætis borð
@@ -74,7 +77,8 @@ class Board:
 class Game:
     def __init__(self) -> None:
         self.players = []
-        self. board = Board()
+        self.board = Board()
+        self.bag = Bag()
 
     def start_game(self):
         more_players = True
@@ -94,10 +98,20 @@ class Game:
             elif counter > 4:
                 more_players = False
 
+    def draw_from_bag(self):
+        rand_num = rd.randint(0, len(self.bag.alphabet)-1)
+        for player in self.players:
+            for i in range(7):
+                letter = self.bag.alphabet[rand_num]
+                player_letter = self.bag.pop(letter=letter)
+                player.tiles.append(player_letter)
+
+
 #     ● 5% Two players enter their names before the game starts
 class Player:
     def __init__(self, name) -> None:
         self.name = name
+        self.tiles = []
 
     def __repr__(self) -> str:
         return str(self)
@@ -108,29 +122,41 @@ class Player:
 #     ● 5% Define a full bag of letters and map the letters to the correct values
 class Bag:
     def __init__(self) -> None:
-        self.tiles = []
         self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.tiles = [ [] for _ in range(len(self.alphabet)) ]
         self.fill_bag()
 
     def fill_bag(self):
         number_of_tiles_list = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
         points_list = [1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10]
         for i in range(len(self.alphabet)):
-            letter = self.alphabet[i]
-            letter = Tile(letter=self.alphabet[i], number_of_tiles=number_of_tiles_list[i], points=points_list[i])
-            self.tiles.append(letter)
+            for _ in range(number_of_tiles_list[i]):
+                self._insert(self.alphabet[i], points_list[i])
+
+    def _insert(self, letter, points):
+            insert_letter = Tile(letter=letter, points=points)
+            index = self.alphabet.index(letter)
+            self.tiles[index].append(insert_letter)
+
+    def pop(self, letter):
+        index = self.alphabet.index(letter)
+        # KANNA HVORT ENDALAUS LOOP??!!
+        while self.tiles[index] == []:
+            rd.randint(0,len(self.alphabet)-1)
+        ret_tile = self.tiles[index].pop()
+        return ret_tile
 
 class Tile:
-    def __init__(self, letter, number_of_tiles, points) -> None:
+    def __init__(self, letter, points) -> None:
+        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         self.letter = letter
-        self.number_of_tiles = number_of_tiles
         self.points = points
 
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
-        return self.letter + str(self.number_of_tiles) + str(self.points)
+        return self.letter + str(self.points)
 
 #     ● 5% Display which letters players have access to
 #     ● 5% Display which players turn it is
@@ -185,13 +211,28 @@ def end_game():
 #             ■ If any words connected to the played word are invalid the current player forfeits their turn
 
 
-def test_game_start():
+def test_game():
     game = Game()
     game.start_game()
     print(game.players)
 
+    game.draw_from_bag()
+    for player in game.players:
+        print(player, player.tiles)
+
+
+
+
 def test_bag():
     bag = Bag()
+    print(bag.tiles)
+
+    print(bag.pop('A'))
+    print(bag.pop('A'))
+    print(bag.pop('A'))
+    print(bag.pop('B'))
+    print(bag.pop('Z'))
+
     print(bag.tiles)
 
 def test_board():
