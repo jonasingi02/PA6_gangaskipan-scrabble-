@@ -2,7 +2,8 @@
 # svo væri hægt að hafa bara if slikirði í innstu for lykkjunni til þess að um það hvort einhver bókstafur ætti að koma þar.git
 class Board:
     def __init__(self) -> None:
-        pass
+        self.tile_empty = True
+
     def __str__(self) -> None:
         ret_str= ""
         for i in range(15):
@@ -10,6 +11,23 @@ class Board:
         ret_str = ret_str + "\n"
         for i in range(15):
             for j in range(15):
+
+                # self.tile_empty = True
+                # if j == 2:
+                #     self.tile_empty = False
+                #     letter = 'A'
+                # if j == 3:
+                #     self.tile_empty = False
+                #     letter = 't'
+                # if j == 4:
+                #     self.tile_empty = False
+                #     letter = 'l'
+                # if j == 5:
+                #     self.tile_empty = False
+                #     letter = 'i'
+                # if self.tile_empty is False:
+                #     ret_str = ret_str + f"|{letter}"
+
                 ret_str = ret_str + "|_"
             ret_str = ret_str + "|\n"
         return ret_str
