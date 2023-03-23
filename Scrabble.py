@@ -1,9 +1,16 @@
+def main():
+    # test_game_start()
+    test_board()
+
+
 # veit ekki alveg hvar ég á að byrja í þessu verkefni enn þetta gæti alveg verið ágætis borð
 # svo væri hægt að hafa bara if slikirði í innstu for lykkjunni til þess að um það hvort einhver bókstafur ætti að koma þar.git
+
+
 class Board:
     def __init__(self) -> None:
+        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         self.grid = self.initialize_grid()
-        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
 
     def initialize_grid(self):
         ''' Returns an initialized grid for the given dimension '''
@@ -11,22 +18,32 @@ class Board:
         EMPTY = '|_'
         grid = []
 
-        for _ in range(DIM):
+        for i in range(DIM):
             sublist = []
-            for _ in range(DIM):
+            for j in range(DIM):
+
+                # Bæta við "special tiles"
+                # if any([
+                #     i == 0 and j == self.alphabet.index('A'),
+                #     i == 0 and j == self.alphabet.index('H'),
+                #     i == 0 and j == self.alphabet.index('O'),
+                # ]):
+                #     sublist.append('|R')
+                # else:
+
                 sublist.append(EMPTY)
             grid.append(sublist)
 
         return grid
 
     def update_grid(self, placement:tuple, letter:str):
-        y_pos = self.alphabet.index(placement[0].upper())
+        y_pos = placement[0]-1
         x_pos = self.alphabet.index(placement[1].upper())
 
         self.grid[y_pos][x_pos] = f'|{letter}'
 
     def __str__(self) -> None:
-        ret_str= "   A B C D E F G H I J K L M N O\n  "
+        ret_str= "    A B C D E F G H I J K L M N O\n   "
 
         # ret_str = ""
 
@@ -35,7 +52,11 @@ class Board:
         ret_str = ret_str + "\n"
         for i in range(15):
 
-            ret_str += self.alphabet[i] + ' '
+            if i <= 8:
+                ret_str += str(i+1) + '  '
+            else:
+                ret_str += str(i+1) + ' '
+
 
             for j in range(15):
                 ret_str = ret_str + self.grid[i][j]
@@ -46,39 +67,70 @@ class Board:
 
 
 
-a = Board()
-print(a)
-
-a.update_grid(('d','d'), 'A')
-a.update_grid(('d','e'), 'T')
-a.update_grid(('d','f'), 'L')
-a.update_grid(('d','g'), 'I')
-
-a.update_grid(('g','f'), 'O')
-a.update_grid(('g','g'), 'G')
-
-a.update_grid(('l','c'), 'J')
-a.update_grid(('l','d'), 'Ó')
-a.update_grid(('l','e'), 'N')
-a.update_grid(('l','f'), 'A')
-a.update_grid(('l','g'), 'S')
-
-print(a)
-
-
 
 
 
 # Basic game
+class Game:
+    def __init__(self) -> None:
+        self.players = []
+        self. board = Board()
+
+    def start_game(self):
+        more_players = True
+        counter = 1
+        print('Before you play Scrable, you must choose player names.')
+        while more_players == True:
+            player = Player(input(f'Please input the name for player {counter}: '))
+            counter += 1
+            self.players.append(player)
+
+            if counter > 2 and counter < 5:
+                more_player_input = input('Would you like to add another player? (y/n) ')
+
+                if more_player_input.lower() == 'n':
+                    more_players = False
+
+            elif counter > 4:
+                more_players = False
+
 #     ● 5% Two players enter their names before the game starts
 class Player:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, name) -> None:
+        self.name = name
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return self.name
 
 #     ● 5% Define a full bag of letters and map the letters to the correct values
 class Bag:
     def __init__(self) -> None:
-        pass
+        self.tiles = []
+        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.fill_bag()
+
+    def fill_bag(self):
+        number_of_tiles_list = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
+        points_list = [1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10]
+        for i in range(len(self.alphabet)):
+            letter = self.alphabet[i]
+            letter = Tile(letter=self.alphabet[i], number_of_tiles=number_of_tiles_list[i], points=points_list[i])
+            self.tiles.append(letter)
+
+class Tile:
+    def __init__(self, letter, number_of_tiles, points) -> None:
+        self.letter = letter
+        self.number_of_tiles = number_of_tiles
+        self.points = points
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return self.letter + str(self.number_of_tiles) + str(self.points)
 
 #     ● 5% Display which letters players have access to
 #     ● 5% Display which players turn it is
@@ -131,3 +183,37 @@ def end_game():
 #             ■ If the word played is invalid the current player forfeits their turn
 #         ○ Check all words connected to the played word with a dictionary
 #             ■ If any words connected to the played word are invalid the current player forfeits their turn
+
+
+def test_game_start():
+    game = Game()
+    game.start_game()
+    print(game.players)
+
+def test_bag():
+    bag = Bag()
+    print(bag.tiles)
+
+def test_board():
+    a = Board()
+    print(a)
+
+    a.update_grid((4,'d'), 'A')
+    a.update_grid((4,'e'), 'T')
+    a.update_grid((4,'f'), 'L')
+    a.update_grid((4,'g'), 'I')
+
+    a.update_grid((7,'f'), 'O')
+    a.update_grid((7,'g'), 'G')
+
+    a.update_grid((12,'c'), 'J')
+    a.update_grid((12,'d'), 'Ó')
+    a.update_grid((12,'e'), 'N')
+    a.update_grid((12,'f'), 'A')
+    a.update_grid((12,'g'), 'S')
+
+    print(a)
+
+
+if __name__ == "__main__":
+    main()
