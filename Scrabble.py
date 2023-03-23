@@ -1,4 +1,5 @@
 # veit ekki alveg hvar ég á að byrja í þessu verkefni enn þetta gæti alveg verið ágætis borð
+# svo væri hægt að hafa bara if slikirði í innstu for lykkjunni til þess að um það hvort einhver bókstafur ætti að koma þar.git 
 class Board:
     def __init__(self) -> None:
         pass
