@@ -5,29 +5,19 @@ class Board:
         self.tile_empty = True
 
     def __str__(self) -> None:
-        ret_str= ""
+        alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
+        ret_str= "   A B C D E F G H I J K L M N O\n  "
+
+        # ret_str = ""
+
         for i in range(15):
            ret_str = ret_str + " _"
         ret_str = ret_str + "\n"
         for i in range(15):
+
+            ret_str += alphabet[i] + ' '
+
             for j in range(15):
-
-                # self.tile_empty = True
-                # if j == 2:
-                #     self.tile_empty = False
-                #     letter = 'A'
-                # if j == 3:
-                #     self.tile_empty = False
-                #     letter = 't'
-                # if j == 4:
-                #     self.tile_empty = False
-                #     letter = 'l'
-                # if j == 5:
-                #     self.tile_empty = False
-                #     letter = 'i'
-                # if self.tile_empty is False:
-                #     ret_str = ret_str + f"|{letter}"
-
                 ret_str = ret_str + "|_"
             ret_str = ret_str + "|\n"
         return ret_str
