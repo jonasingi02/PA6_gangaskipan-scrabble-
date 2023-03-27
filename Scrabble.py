@@ -1,5 +1,8 @@
 import random as rd
 
+class BagEmptyError(Exception):
+    pass
+
 def main():
     test_game()
     # test_board()
@@ -99,9 +102,9 @@ class Game:
                 more_players = False
 
     def draw_from_bag(self):
-        rand_num = rd.randint(0, len(self.bag.alphabet)-1)
         for player in self.players:
             for i in range(7):
+                rand_num = rd.randint(0, len(self.bag.alphabet)-1)
                 letter = self.bag.alphabet[rand_num]
                 player_letter = self.bag.pop(letter=letter)
                 player.tiles.append(player_letter)
@@ -124,6 +127,7 @@ class Bag:
     def __init__(self) -> None:
         self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         self.tiles = [ [] for _ in range(len(self.alphabet)) ]
+        self.size = 0
         self.fill_bag()
 
     def fill_bag(self):
@@ -137,13 +141,17 @@ class Bag:
             insert_letter = Tile(letter=letter, points=points)
             index = self.alphabet.index(letter)
             self.tiles[index].append(insert_letter)
+            self.size += 1
 
     def pop(self, letter):
+        # Random er ekki nógu gott því ekki sömu líkur á hverju instance af tile
         index = self.alphabet.index(letter)
-        # KANNA HVORT ENDALAUS LOOP??!!
+        if self.size == 0:
+            raise BagEmptyError
         while self.tiles[index] == []:
-            rd.randint(0,len(self.alphabet)-1)
+            index = rd.randint(0,len(self.alphabet)-1)
         ret_tile = self.tiles[index].pop()
+        self.size -= 1
         return ret_tile
 
 class Tile:
