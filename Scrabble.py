@@ -104,9 +104,9 @@ class Game:
     def draw_from_bag(self):
         for player in self.players:
             for i in range(7):
-                rand_num = rd.randint(0, len(self.bag.alphabet)-1)
-                letter = self.bag.alphabet[rand_num]
-                player_letter = self.bag.pop(letter=letter)
+                rand_num = rd.randint(0, self.bag.size)
+                # letter = self.bag.alphabet[rand_num]
+                player_letter = self.bag.draw(draw_number=rand_num)
                 player.tiles.append(player_letter)
 
 
@@ -143,16 +143,28 @@ class Bag:
             self.tiles[index].append(insert_letter)
             self.size += 1
 
-    def pop(self, letter):
-        # Random er ekki nógu gott því ekki sömu líkur á hverju instance af tile
-        index = self.alphabet.index(letter)
+    def draw(self, draw_number):
         if self.size == 0:
             raise BagEmptyError
-        while self.tiles[index] == []:
-            index = rd.randint(0,len(self.alphabet)-1)
-        ret_tile = self.tiles[index].pop()
+
+        counter = 0
+        for tile_array in self.tiles:
+            for tile in tile_array:
+                if counter == draw_number:
+                    index = tile_array.index(tile)
+                    ret_tile = self.tiles[self.tiles.index(tile_array)].pop(index)
+                counter += 1
+
         self.size -= 1
         return ret_tile
+
+        # Random er ekki nógu gott því ekki sömu líkur á hverju instance af tile
+        # index = self.alphabet.index(letter)
+        # if self.size == 0:
+        #     raise BagEmptyError
+        # while self.tiles[index] == []:
+        #     index = rd.randint(0,len(self.alphabet)-1)
+        # ret_tile = self.tiles[index].pop()
 
 class Tile:
     def __init__(self, letter, points) -> None:
@@ -224,9 +236,11 @@ def test_game():
     game.start_game()
     print(game.players)
 
+    print(f'Size of bag before draw: {game.bag.size}')
     game.draw_from_bag()
     for player in game.players:
         print(player, player.tiles)
+    print(f'Size of bag after draw: {game.bag.size}')
 
 
 
