@@ -7,6 +7,7 @@ def main():
     test_game()
     # test_board()
     # test_bag()
+    pass
 
 
 # veit ekki alveg hvar ég á að byrja í þessu verkefni enn þetta gæti alveg verið ágætis borð
@@ -34,7 +35,7 @@ class Board:
                 #     i == 0 and j == self.alphabet.index('H'),
                 #     i == 0 and j == self.alphabet.index('O'),
                 # ]):
-                #     sublist.append('|R')
+                #     sublist.append('|&')
                 # else:
 
                 sublist.append(EMPTY)
@@ -80,10 +81,16 @@ class Board:
 class Game:
     def __init__(self) -> None:
         self.players = []
+        self.initialize_players()
         self.board = Board()
         self.bag = Bag()
+        self.turn_counter = 0
+        self.turn = self.players[0]
 
     def start_game(self):
+        pass
+
+    def initialize_players(self):
         more_players = True
         counter = 1
         print('Before you play Scrable, you must choose player names.')
@@ -100,14 +107,37 @@ class Game:
 
             elif counter > 4:
                 more_players = False
+        print()
 
     def draw_from_bag(self):
         for player in self.players:
             for i in range(7):
-                rand_num = rd.randint(0, self.bag.size)
+                rand_num = rd.randint(0, self.bag.size-1)
                 # letter = self.bag.alphabet[rand_num]
                 player_letter = self.bag.draw(draw_number=rand_num)
                 player.tiles.append(player_letter)
+
+    def print_game(self):
+        print(f'Next turn: {self.turn.name}\n')
+        self.print_available_letters()
+        print(self.board)
+
+
+
+    def print_available_letters(self):
+
+        for player in self.players:
+            ret_str = ''
+            # print(f'{player.name}\'s tiles: {[tile.letter for tile in player.tiles]}')
+            ret_str += f'{player}: '
+            for tile in player.tiles:
+                ret_str += f'{tile.letter}({tile.points}), '
+
+            print(ret_str[:-2], end='\n\n')
+
+    def next_turn(self):
+        self.turn_counter += 1
+        self.turn = self.players[self.turn_counter%2]
 
 
 #     ● 5% Two players enter their names before the game starts
@@ -125,14 +155,14 @@ class Player:
 #     ● 5% Define a full bag of letters and map the letters to the correct values
 class Bag:
     def __init__(self) -> None:
-        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '*']
         self.tiles = [ [] for _ in range(len(self.alphabet)) ]
         self.size = 0
         self.fill_bag()
 
     def fill_bag(self):
-        number_of_tiles_list = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-        points_list = [1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10]
+        number_of_tiles_list = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1, 2]
+        points_list = [1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10, 0]
         for i in range(len(self.alphabet)):
             for _ in range(number_of_tiles_list[i]):
                 self._insert(self.alphabet[i], points_list[i])
@@ -147,12 +177,15 @@ class Bag:
         if self.size == 0:
             raise BagEmptyError
 
+
+        #NOTA ENUMERATE?? Í BÁÐUM FORLYKKJUM
         counter = 0
         for tile_array in self.tiles:
             for tile in tile_array:
                 if counter == draw_number:
-                    index = tile_array.index(tile)
-                    ret_tile = self.tiles[self.tiles.index(tile_array)].pop(index)
+                    tile_array_index = self.tiles.index(tile_array)
+                    tile_index = tile_array.index(tile)
+                    ret_tile = self.tiles[tile_array_index].pop(tile_index)
                 counter += 1
 
         self.size -= 1
@@ -233,14 +266,21 @@ def end_game():
 
 def test_game():
     game = Game()
-    game.start_game()
-    print(game.players)
 
-    print(f'Size of bag before draw: {game.bag.size}')
+    # print(game.players)
+    # print(f'Size of bag before draw: {game.bag.size}')
+
     game.draw_from_bag()
-    for player in game.players:
-        print(player, player.tiles)
-    print(f'Size of bag after draw: {game.bag.size}')
+
+    # for player in game.players:
+    #     print(player, player.tiles)
+    # print(f'Size of bag after draw: {game.bag.size}')
+
+    game.print_game()
+
+    game.next_turn()
+
+    game.print_game()
 
 
 
