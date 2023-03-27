@@ -9,9 +9,109 @@ def main():
     # test_bag()
     pass
 
+# Basic game
+class Game:
+    def __init__(self) -> None:
+        self.players = []
+        self.initialize_players()
+        self.board = Board()
+        self.board.score_list = [0] * len(self.players)
+        self.bag = Bag()
+        self.draw_from_bag()
+        self.turn_counter = 0
+        self.turn = self.players[0]
+        self.over = False
 
-# veit ekki alveg hvar ég á að byrja í þessu verkefni enn þetta gæti alveg verið ágætis borð
-# svo væri hægt að hafa bara if slikirði í innstu for lykkjunni til þess að um það hvort einhver bókstafur ætti að koma þar.git
+    def start_game(self):
+        pass
+
+    def initialize_players(self):
+        more_players = True
+        counter = 1
+        print('Before you play Scrable, you must choose player names.')
+        while more_players == True:
+            player = Player(input(f'Please input the name for player {counter}: '))
+            counter += 1
+            self.players.append(player)
+
+            if counter > 2 and counter < 5:
+                more_player_input = input('Would you like to add another player? (y/n) ')
+
+                if more_player_input.lower() == 'n':
+                    more_players = False
+
+            elif counter > 4:
+                more_players = False
+        print()
+
+    def draw_from_bag(self):
+        for player in self.players:
+            for i in range(7):
+                rand_num = rd.randint(0, self.bag.size-1)
+                # letter = self.bag.alphabet[rand_num]
+                player_letter = self.bag.draw(draw_number=rand_num)
+                player.tiles.append(player_letter)
+
+    def print_game(self):
+        self.print_available_letters()
+        print(f'Next turn: {self.turn.name}\n')
+        print(self.board)
+
+    def choose(self):
+        choice = input('(1) Play word\n(2) Swap\n(3) Pass\nWhat you like to do?: ')
+
+        if choice == '1':
+            self.play_word()
+        elif choice == '2':
+            # self.swap()
+            pass
+        elif choice == '3':
+            # self.pass_turn
+            pass
+
+    def print_available_letters(self):
+
+        for player in self.players:
+            ret_str = ''
+            # print(f'{player.name}\'s tiles: {[tile.letter for tile in player.tiles]}')
+            ret_str += f'{player}: '
+            for tile in player.tiles:
+                ret_str += f'{tile.letter}({tile.points}), '
+
+            print(ret_str[:-2], end='\n\n')
+
+    def next_turn(self):
+        self.turn_counter += 1
+        self.turn = self.players[self.turn_counter%2]
+
+    def play_word(self):
+        player = self.turn
+        word = input('Which word would you like to play?: ')
+        char_list = list(word.upper())
+        input_list = []
+
+        for char in char_list:
+            found = False
+            counter = 0
+
+            while not found:
+                tile = player.tiles[counter]
+
+                if tile.letter == char:
+                    input_tile = player.pop(index=counter)
+                    found = True
+                    input_list.append(input_tile)
+                else:
+                    counter += 1
+        alignment = None
+        pos = list(input('Where would you like to place the word?: '))
+
+        if pos[0].isdigit() is False and pos[1].isdigit() is True:
+            alignment = 'vertical'
+        elif pos[0].isdigit() is True and pos[1].isdigit() is False:
+            alignment = 'horizontal'
+
+        self.board.update(input_list=input_list, pos=pos, alignment=alignment)
 
 
 class Board:
@@ -96,119 +196,6 @@ class Board:
                 ret_str = ret_str + self.grid[i][j]
             ret_str = ret_str + "|\n"
         return ret_str
-
-
-
-
-
-
-
-
-# Basic game
-class Game:
-    def __init__(self) -> None:
-        self.players = []
-        self.initialize_players()
-        self.board = Board()
-        self.board.score_list = [0] * len(self.players)
-        self.bag = Bag()
-        self.turn_counter = 0
-        self.turn = self.players[0]
-
-    def start_game(self):
-        pass
-
-    def initialize_players(self):
-        more_players = True
-        counter = 1
-        print('Before you play Scrable, you must choose player names.')
-        while more_players == True:
-            player = Player(input(f'Please input the name for player {counter}: '))
-            counter += 1
-            self.players.append(player)
-
-            if counter > 2 and counter < 5:
-                more_player_input = input('Would you like to add another player? (y/n) ')
-
-                if more_player_input.lower() == 'n':
-                    more_players = False
-
-            elif counter > 4:
-                more_players = False
-        print()
-
-    def draw_from_bag(self):
-        for player in self.players:
-            for i in range(7):
-                rand_num = rd.randint(0, self.bag.size-1)
-                # letter = self.bag.alphabet[rand_num]
-                player_letter = self.bag.draw(draw_number=rand_num)
-                player.tiles.append(player_letter)
-
-    def print_game(self):
-        print(f'Next turn: {self.turn.name}\n')
-        self.print_available_letters()
-        print(self.board)
-
-    def choose(self):
-        choice = input('(1) Play word\n(2) Swap\n(3) Pass\nWhat you like to do?: ')
-
-        if choice == '1':
-            self.play_word()
-        elif choice == '2':
-            # self.swap()
-            pass
-        elif choice == '3':
-            # self.pass_turn
-            pass
-
-
-
-    def print_available_letters(self):
-
-        for player in self.players:
-            ret_str = ''
-            # print(f'{player.name}\'s tiles: {[tile.letter for tile in player.tiles]}')
-            ret_str += f'{player}: '
-            for tile in player.tiles:
-                ret_str += f'{tile.letter}({tile.points}), '
-
-            print(ret_str[:-2], end='\n\n')
-
-    def next_turn(self):
-        self.turn_counter += 1
-        self.turn = self.players[self.turn_counter%2]
-
-    def play_word(self):
-        player = self.turn
-        word = input('Which word would you like to play?: ')
-        char_list = list(word.upper())
-        input_list = []
-
-        for char in char_list:
-            found = False
-            counter = 0
-
-            while not found:
-                tile = player.tiles[counter]
-
-                if tile.letter == char:
-                    input_tile = player.pop(index=counter)
-                    found = True
-                    input_list.append(input_tile)
-                else:
-                    counter += 1
-        alignment = None
-        pos = list(input('Where would you like to place the word?: '))
-
-        if pos[0].isdigit() is False and pos[1].isdigit() is True:
-            alignment = 'vertical'
-        elif pos[0].isdigit() is True and pos[1].isdigit() is False:
-            alignment = 'horizontal'
-
-        self.board.update(input_list=input_list, pos=pos, alignment=alignment)
-
-
 
 
 #     ● 5% Two players enter their names before the game starts
@@ -344,6 +331,17 @@ def end_game():
 def test_game():
     game = Game()
 
+    game.print_game()
+
+    while not game.over:
+        game.choose()
+
+        game.next_turn()
+
+        game.print_game()
+
+
+
     # print(game.players)
     # print(f'Size of bag before draw: {game.bag.size}')
 
@@ -360,6 +358,7 @@ def test_game():
     game.next_turn()
 
     game.print_game()
+
 
     # game.next_turn()
 
