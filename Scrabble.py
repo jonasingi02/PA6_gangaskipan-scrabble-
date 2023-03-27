@@ -43,9 +43,36 @@ class Board:
 
         return grid
 
-    def update_grid(self, placement:tuple, letter:str):
-        y_pos = placement[0]-1
-        x_pos = self.alphabet.index(placement[1].upper())
+
+    def update(self, input_list, pos, alignment):
+        char_list = []
+        for tile in input_list:
+            char_list.append(tile.letter)
+
+        score = 0
+
+        if alignment == 'vertical':
+            x = self.alphabet.index(pos[0].upper())
+            y = int(pos[1])-1
+            for char in char_list:
+                placement = (x,y)
+                self._update_grid(placement=placement, letter=char)
+                # score += ?
+                y += 1
+        elif alignment == 'horizontal':
+            x = self.alphabet.index(pos[1].upper())
+            y = int(pos[0])-1
+            for char in char_list:
+                placement = (x,y)
+                self._update_grid(placement=placement, letter=char)
+                x += 1
+
+        return score
+
+
+    def _update_grid(self, placement:tuple, letter:str):
+        y_pos = placement[1]
+        x_pos = placement[0]
 
         self.grid[y_pos][x_pos] = f'|{letter}'
 
@@ -83,6 +110,7 @@ class Game:
         self.players = []
         self.initialize_players()
         self.board = Board()
+        self.board.score_list = [0] * len(self.players)
         self.bag = Bag()
         self.turn_counter = 0
         self.turn = self.players[0]
@@ -122,6 +150,18 @@ class Game:
         self.print_available_letters()
         print(self.board)
 
+    def choose(self):
+        choice = input('(1) Play word\n(2) Swap\n(3) Pass\nWhat you like to do?: ')
+
+        if choice == '1':
+            self.play_word()
+        elif choice == '2':
+            # self.swap()
+            pass
+        elif choice == '3':
+            # self.pass_turn
+            pass
+
 
 
     def print_available_letters(self):
@@ -139,12 +179,49 @@ class Game:
         self.turn_counter += 1
         self.turn = self.players[self.turn_counter%2]
 
+    def play_word(self):
+        player = self.turn
+        word = input('Which word would you like to play?: ')
+        char_list = list(word.upper())
+        input_list = []
+
+        for char in char_list:
+            found = False
+            counter = 0
+
+            while not found:
+                tile = player.tiles[counter]
+
+                if tile.letter == char:
+                    input_tile = player.pop(index=counter)
+                    found = True
+                    input_list.append(input_tile)
+                else:
+                    counter += 1
+        alignment = None
+        pos = list(input('Where would you like to place the word?: '))
+
+        if pos[0].isdigit() is False and pos[1].isdigit() is True:
+            alignment = 'vertical'
+        elif pos[0].isdigit() is True and pos[1].isdigit() is False:
+            alignment = 'horizontal'
+
+        self.board.update(input_list=input_list, pos=pos, alignment=alignment)
+
+
+
 
 #     ● 5% Two players enter their names before the game starts
 class Player:
     def __init__(self, name) -> None:
         self.name = name
         self.tiles = []
+
+    def pop(self, index):
+        return self.tiles.pop(index)
+
+    def update_score(self, score):
+        pass
 
     def __repr__(self) -> str:
         return str(self)
@@ -278,9 +355,13 @@ def test_game():
 
     game.print_game()
 
+    game.choose()
+
     game.next_turn()
 
     game.print_game()
+
+    # game.next_turn()
 
 
 
@@ -301,19 +382,19 @@ def test_board():
     a = Board()
     print(a)
 
-    a.update_grid((4,'d'), 'A')
-    a.update_grid((4,'e'), 'T')
-    a.update_grid((4,'f'), 'L')
-    a.update_grid((4,'g'), 'I')
+    a._update_grid((4,'d'), 'A')
+    a._update_grid((4,'e'), 'T')
+    a._update_grid((4,'f'), 'L')
+    a._update_grid((4,'g'), 'I')
 
-    a.update_grid((7,'f'), 'O')
-    a.update_grid((7,'g'), 'G')
+    a._update_grid((7,'f'), 'O')
+    a._update_grid((7,'g'), 'G')
 
-    a.update_grid((12,'c'), 'J')
-    a.update_grid((12,'d'), 'Ó')
-    a.update_grid((12,'e'), 'N')
-    a.update_grid((12,'f'), 'A')
-    a.update_grid((12,'g'), 'S')
+    a._update_grid((12,'c'), 'J')
+    a._update_grid((12,'d'), 'Ó')
+    a._update_grid((12,'e'), 'N')
+    a._update_grid((12,'f'), 'A')
+    a._update_grid((12,'g'), 'S')
 
     print(a)
 
